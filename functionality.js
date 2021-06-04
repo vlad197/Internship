@@ -6,7 +6,6 @@ var movieList = [];
 
 function prepareTableCell(name1, rating, date, type, da) {
 
-    //  var table = document.querySelector('table');
     var table = document.querySelector('#myTable');
     var row = table.insertRow();
 
@@ -57,7 +56,7 @@ function refreshTable() {
     `;
 
     table.innerHTML += '';
-    
+
 
     for (var i = 0; i < movieList.length; i++) {
         var name1 = movieList[i].name1;
@@ -67,16 +66,8 @@ function refreshTable() {
         var da = movieList[i].da;
 
         prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da);
-        
-        //   console.log(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da);
 
-     //   document.getElementById("name1").value = '';
-     //   document.getElementById("date").value = '';
-     //   document.getElementById("type").value = '';
-     //   document.getElementById("rating").value = '';
-     //   document.getElementById("da").checked = '';
 
-       
 
 
 
@@ -114,10 +105,10 @@ function addMovie() {
 
     movieList.push(movie);
 
-    //console.log(movieList);
+
 
     let pre = document.querySelector('#myTable');
-     pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
+    pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
 
     localStorage.setItem('MovieList', JSON.stringify(movieList));
 
@@ -167,8 +158,8 @@ function addMovie() {
     </tr>
     `;
 
-   table.innerHTML += template;
-    
+    table.innerHTML += template;
+
 
 
 }
@@ -184,7 +175,7 @@ function ValidareNumeRating() {
     if (name == '') {
         text = "name input not valid";
         document.getElementById("myTable").innerHTML = text;
-        // return;
+
         return false;
 
     }
@@ -236,63 +227,8 @@ function dataCalendaristica() {
     return true;
 }
 
-function insereaza() {
-
-    var btnAdd = document.querySelector('button');
-    var table = document.querySelector('table');
-
-    var nameInput = document.querySelector('#name1');
-    var dateInput = document.querySelector('#date');
-    var typeInput = document.querySelector('#type');
-    var ratingInput = document.querySelector('#rating');
-    var releasedInput = document.querySelector('#da');
 
 
-
-
-    var name1 = nameInput.value;
-    var date = dateInput.value;
-    var type = typeInput.value;
-    var rating = ratingInput.value;
-    var da = releasedInput.checked;
-
-
-
-    let template = `
-                    <tr>
-                        <td>${name1}</td>
-                        <td>${date}</td>
-                        <td>${type}</td>
-                        <td>${rating}</td>
-                        <td>${da}</td>
-                        
-                        
-                    </tr>
-                    `;
-
-    table.innerHTML += template;
-
-
-
-
-
-
-}
-
-function reseteaza() {
-
-
-
-
-    document.getElementById("name1").value = '';
-    document.getElementById("date").value = '';
-    document.getElementById("type").value = '';
-    document.getElementById("rating").value = '';
-    document.getElementById("da").checked = '';
-
-
-
-}
 
 
 function onButtonClick() {
@@ -301,11 +237,11 @@ function onButtonClick() {
 
     if (!dataCalendaristica())
         return;
-    //   insereaza();
-    //   reseteaza();
+    
+    
 
-    addMovie();
-      refreshTable();
-    // loadData();
+    // addMovie();
+    refreshTable();
+    
 
 }
