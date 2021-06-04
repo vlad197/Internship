@@ -1,7 +1,104 @@
 console.log(1);
 
-
+window.onload = loadData;
 var movieList = [];
+
+
+function prepareTableCell(name1, rating, date, type, da) {
+
+    //  var table = document.querySelector('table');
+    var table = document.querySelector('#myTable');
+    var row = table.insertRow();
+
+    var nameCell = row.insertCell(0);
+    var ratingCell = row.insertCell(1);
+    var dateCell = row.insertCell(2);
+    var typeCell = row.insertCell(3);
+    var daCell = row.insertCell(4);
+
+
+    nameCell.innerHTML = name1;
+    ratingCell.innerHTML = rating;
+    dateCell.innerHTML = date;
+    typeCell.innerHTML = type;
+    daCell.innerHTML = da;
+
+
+}
+
+
+
+
+function refreshTable() {
+
+    var table = document.querySelector('#myTable');
+
+
+    let template = `
+
+    <tr>
+    <th>Name of Movie</th>
+    <th>Release Date</th>
+    <th>Type of Movie</th>
+    <th>Rating</th>
+    <th>Released on dvd</th>
+
+    </tr>
+    <tr>
+        
+        <td>${name1}</td>
+        <td>${date}</td>
+        <td>${type}</td>
+        <td>${rating}</td>
+        <td>${da}</td>
+        
+        
+    </tr>
+    `;
+
+    table.innerHTML += '';
+    
+
+    for (var i = 0; i < movieList.length; i++) {
+        var name1 = movieList[i].name1;
+        var rating = movieList[i].rating;
+        var date = movieList[i].date;
+        var type = movieList[i].type;
+        var da = movieList[i].da;
+
+        prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da);
+        
+        //   console.log(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da);
+
+     //   document.getElementById("name1").value = '';
+     //   document.getElementById("date").value = '';
+     //   document.getElementById("type").value = '';
+     //   document.getElementById("rating").value = '';
+     //   document.getElementById("da").checked = '';
+
+       
+
+
+
+
+    }
+
+}
+
+
+function loadData() {
+
+
+
+    if (localStorage.getItem('MovieList') != null) {
+        movieList = JSON.parse(localStorage.getItem('MovieList'));
+        refreshTable();
+
+
+    }
+
+
+}
 function addMovie() {
 
 
@@ -16,19 +113,19 @@ function addMovie() {
     }
 
     movieList.push(movie);
-    
+
     //console.log(movieList);
 
-    let pre = document.querySelector('table');
-    pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
+    let pre = document.querySelector('#myTable');
+     pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
 
-    localStorage.setItem('MovieList', JSON.stringify(movieList) );
+    localStorage.setItem('MovieList', JSON.stringify(movieList));
 
     console.log(movieList);
 
 
     var btnAdd = document.querySelector('button');
-    var table = document.querySelector('table');
+    var table = document.querySelector('#myTable');
 
     var nameInput = document.querySelector('#name1');
     var dateInput = document.querySelector('#date');
@@ -48,27 +145,35 @@ function addMovie() {
     var da = releasedInput.checked;
 
 
-
     let template = `
-                <tr>
-                    <td>${name1}</td>
-                    <td>${date}</td>
-                    <td>${type}</td>
-                    <td>${rating}</td>
-                    <td>${da}</td>
-                    
-                    
-                </tr>
-                `;
 
-    table.innerHTML += template;
+    <tr>
+    <th>Name of Movie</th>
+    <th>Release Date</th>
+    <th>Type of Movie</th>
+    <th>Rating</th>
+    <th>Released on dvd</th>
+
+    </tr>
+    <tr>
+        
+        <td>${name1}</td>
+        <td>${date}</td>
+        <td>${type}</td>
+        <td>${rating}</td>
+        <td>${da}</td>
+        
+        
+    </tr>
+    `;
+
+   table.innerHTML += template;
+    
 
 
 }
 
-//document.addEventListener('DOMContentLoaded', ()=>{
-//  document.getElementById('button').addEventListener('click',addMovie);
-//});
+
 
 
 
@@ -94,15 +199,13 @@ function ValidareNumeRating() {
 
     return true;
 
-    //  var dateformat = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+
 }
 
 function dataCalendaristica() {
     var data = document.getElementById("date").value;
 
 
-    //  if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(data))
-    //  return false;
 
 
     var parts = data.split("/");
@@ -143,9 +246,6 @@ function insereaza() {
     var typeInput = document.querySelector('#type');
     var ratingInput = document.querySelector('#rating');
     var releasedInput = document.querySelector('#da');
-
-
-
 
 
 
@@ -196,14 +296,16 @@ function reseteaza() {
 
 
 function onButtonClick() {
-    //   if (!ValidareNumeRating())
-    //      return;
+    if (!ValidareNumeRating())
+        return;
 
-    //   if (!dataCalendaristica())
-    //       return;
+    if (!dataCalendaristica())
+        return;
     //   insereaza();
     //   reseteaza();
 
     addMovie();
+      refreshTable();
+    // loadData();
 
 }
