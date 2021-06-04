@@ -4,7 +4,7 @@ window.onload = loadData;
 var movieList = [];
 
 
-function prepareTableCell(name1, rating, date, type, da) {
+function prepareTableCell(name1, rating, date, type, da,index) {
 
     var table = document.querySelector('#myTable');
     var row = table.insertRow();
@@ -15,12 +15,15 @@ function prepareTableCell(name1, rating, date, type, da) {
     var typeCell = row.insertCell(3);
     var daCell = row.insertCell(4);
 
+    var actionCell = row.insertCell(5);
+
 
     nameCell.innerHTML = name1;
     ratingCell.innerHTML = rating;
     dateCell.innerHTML = date;
     typeCell.innerHTML = type;
     daCell.innerHTML = da;
+    actionCell.innerHTML = '<button onClick="deleteRows('+index+')">Delete</button>';
 
 
 }
@@ -41,15 +44,18 @@ function refreshTable() {
     <th>Type of Movie</th>
     <th>Rating</th>
     <th>Released on dvd</th>
+    <th>Delete</th>
 
     </tr>
     <tr>
         
+        <td>${index}</td>
         <td>${name1}</td>
         <td>${date}</td>
         <td>${type}</td>
         <td>${rating}</td>
         <td>${da}</td>
+        
         
         
     </tr>
@@ -64,8 +70,9 @@ function refreshTable() {
         var date = movieList[i].date;
         var type = movieList[i].type;
         var da = movieList[i].da;
+        var index = movieList[i].index;
 
-        prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da);
+        prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da, movieList[i].index);
 
 
 
@@ -90,79 +97,7 @@ function loadData() {
 
 
 }
-function addMovie() {
 
-
-
-    let movie = {
-        name1: document.getElementById('name1').value,
-        rating: document.getElementById('rating').value,
-        date: document.getElementById('date').value,
-        type: document.getElementById('type').value,
-        da: document.getElementById('da').checked
-
-    }
-
-    movieList.push(movie);
-
-
-
-    let pre = document.querySelector('#myTable');
-    pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
-
-    localStorage.setItem('MovieList', JSON.stringify(movieList));
-
-    console.log(movieList);
-
-
-    var btnAdd = document.querySelector('button');
-    var table = document.querySelector('#myTable');
-
-    var nameInput = document.querySelector('#name1');
-    var dateInput = document.querySelector('#date');
-    var typeInput = document.querySelector('#type');
-    var ratingInput = document.querySelector('#rating');
-    var releasedInput = document.querySelector('#da');
-
-
-
-
-
-
-    var name1 = nameInput.value;
-    var date = dateInput.value;
-    var type = typeInput.value;
-    var rating = ratingInput.value;
-    var da = releasedInput.checked;
-
-
-    let template = `
-
-    <tr>
-    <th>Name of Movie</th>
-    <th>Release Date</th>
-    <th>Type of Movie</th>
-    <th>Rating</th>
-    <th>Released on dvd</th>
-
-    </tr>
-    <tr>
-        
-        <td>${name1}</td>
-        <td>${date}</td>
-        <td>${type}</td>
-        <td>${rating}</td>
-        <td>${da}</td>
-        
-        
-    </tr>
-    `;
-
-    table.innerHTML += template;
-
-
-
-}
 
 
 
@@ -228,7 +163,18 @@ function dataCalendaristica() {
 }
 
 
+function deleteRows(index) {
 
+    var table = document.getElementById("#myTable");
+    var index = document.getElementById("#index");
+
+    table.deleteRow(index+1);
+
+
+
+
+
+}
 
 
 function onButtonClick() {
@@ -240,7 +186,7 @@ function onButtonClick() {
     
     
 
-    // addMovie();
+    
     refreshTable();
     
 
