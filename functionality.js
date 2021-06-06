@@ -1,14 +1,13 @@
-console.log(1);
+//console.log(1);
 
 window.onload = loadData;
 var movieList = [];
-
 
 function prepareTableCell(name1, rating, date, type, da,index) {
 
     var table = document.querySelector('#myTable');
     var row = table.insertRow();
-
+    row.id = 'row'+index;
     var nameCell = row.insertCell(0);
     var ratingCell = row.insertCell(1);
     var dateCell = row.insertCell(2);
@@ -16,6 +15,7 @@ function prepareTableCell(name1, rating, date, type, da,index) {
     var daCell = row.insertCell(4);
 
     var actionCell = row.insertCell(5);
+    var indexCell = row.insertCell(6);
 
 
     nameCell.innerHTML = name1;
@@ -24,6 +24,7 @@ function prepareTableCell(name1, rating, date, type, da,index) {
     typeCell.innerHTML = type;
     daCell.innerHTML = da;
     actionCell.innerHTML = '<button onClick="deleteRows('+index+')">Delete</button>';
+    indexCell.innerHTML = '<div id="index'+index+'" >'+index+'</div>';
 
 
 }
@@ -32,77 +33,22 @@ function prepareTableCell(name1, rating, date, type, da,index) {
 
 
 function refreshTable() {
-
     var table = document.querySelector('#myTable');
-
-
-    let template = `
-
-    <tr>
-    <th>Name of Movie</th>
-    <th>Release Date</th>
-    <th>Type of Movie</th>
-    <th>Rating</th>
-    <th>Released on dvd</th>
-    <th>Delete</th>
-
-    </tr>
-    <tr>
-        
-        <td>${index}</td>
-        <td>${name1}</td>
-        <td>${date}</td>
-        <td>${type}</td>
-        <td>${rating}</td>
-        <td>${da}</td>
-        
-        
-        
-    </tr>
-    `;
 
     table.innerHTML += '';
 
-
     for (var i = 0; i < movieList.length; i++) {
-        var name1 = movieList[i].name1;
-        var rating = movieList[i].rating;
-        var date = movieList[i].date;
-        var type = movieList[i].type;
-        var da = movieList[i].da;
-        var index = movieList[i].index;
-
         prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da, movieList[i].index);
-
-
-
-
-
-
     }
-
 }
 
 
 function loadData() {
-
-
-
     if (localStorage.getItem('MovieList') != null) {
         movieList = JSON.parse(localStorage.getItem('MovieList'));
         refreshTable();
-
-
     }
-
-
 }
-
-
-
-
-
-
 
 function ValidareNumeRating() {
     var table = document.getElementById("myTable");
@@ -130,9 +76,6 @@ function ValidareNumeRating() {
 
 function dataCalendaristica() {
     var data = document.getElementById("date").value;
-
-
-
 
     var parts = data.split("/");
     var day = parseInt(parts[1], 10);
@@ -164,17 +107,132 @@ function dataCalendaristica() {
 
 
 function deleteRows(index) {
+    var row = document.getElementById("row"+index);
+    
+    row.remove();
 
-    var table = document.getElementById("#myTable");
-    var index = document.getElementById("#index");
+    var newMovieList = movieList.filter((obj) => {
+        return obj.index != index;
 
-    table.deleteRow(index+1);
+    });
+
+    localStorage.setItem('MovieList',JSON.stringify(newMovieList));
+    console.log('newMovieList: ',newMovieList);
+}
+
+
+function addMovie() {
+    let movie = {
+        name1: document.getElementById('name1').value,
+        rating: document.getElementById('rating').value,
+        date: document.getElementById('date').value,
+        type: document.getElementById('type').value,
+        da: document.getElementById('da').checked,
+        index:document.getElementById('index').value
+
+    }
+
+    movieList.push(movie);
+    
+
+    let pre = document.querySelector('#myTable');
+    pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
+
+    localStorage.setItem('MovieList', JSON.stringify(movieList) );
+
+    console.log(movieList);
+
+
+    var btnAdd = document.querySelector('button');
+    var table = document.querySelector('table');
+
+    var nameInput = document.querySelector('#name1');
+    var dateInput = document.querySelector('#date');
+    var typeInput = document.querySelector('#type');
+    var ratingInput = document.querySelector('#rating');
+    var releasedInput = document.querySelector('#da');
+    var indexInput = document.querySelector('#index');
+
+    var name1 = nameInput.value;
+    var date = dateInput.value;
+    var type = typeInput.value;
+    var rating = ratingInput.value;
+    var da = releasedInput.checked;
+    var index = indexInput.value;
 
 
 
+    let template = `
+
+    <tr>
+    <th>Name of Movie</th>
+    <th>Release Date</th>
+    <th>Type of Movie</th>
+    <th>Rating</th>
+    <th>Released on dvd</th>
+    <th>Delete</th>
+    <th>Index</th>
+
+    </tr>
+    <tr>
+        
+        <td>${index}</td>
+        <td>${name1}</td>
+        <td>${date}</td>
+        <td>${type}</td>
+        <td>${rating}</td>
+        <td>${da}</td>
+        <td>${index}</td>
+    </tr>
+    `;
+
+    table.innerHTML += template;
+}
+
+function sortTable(c) {
+     
+    const sortedTable = movieList.sort(function(a, b) {
+        var textA = a.name1.toUpperCase();
+        var textB = b.name1.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+    
+    
+    localStorage.setItem('MovieList', JSON.stringify(sortedTable));
+    location.reload();
+    
+    
+}
+
+function sortTableType(c) {
+
+    
+    const sortedTable = movieList.sort(function(a, b) {
+        var textA = a.type.toUpperCase();
+        var textB = b.type.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+
+
+
+    localStorage.setItem('MovieList', JSON.stringify(sortedTable));
+    location.reload();
+}
+
+
+function sortRating(c) {
+
+  const sortareRating =  movieList.sort(function (a, b) {
+        return a.rating - b.rating;
+      });
+
+
+      localStorage.setItem('MovieList', JSON.stringify(sortareRating));
+      location.reload();
 
 
 }
+
 
 
 function onButtonClick() {
@@ -185,9 +243,7 @@ function onButtonClick() {
         return;
     
     
-
+    addMovie();
     
     refreshTable();
-    
-
 }
