@@ -1,47 +1,4 @@
-//console.log(1);
-
-window.onload = loadData;
 var movieList = [];
-
-function prepareTableCell(name1, rating, date, type, da,index) {
-
-    var table = document.querySelector('#myTable');
-    var row = table.insertRow();
-    row.id = 'row'+index;
-    var nameCell = row.insertCell(0);
-    var ratingCell = row.insertCell(1);
-    var dateCell = row.insertCell(2);
-    var typeCell = row.insertCell(3);
-    var daCell = row.insertCell(4);
-
-    var actionCell = row.insertCell(5);
-    var indexCell = row.insertCell(6);
-
-
-    nameCell.innerHTML = name1;
-    ratingCell.innerHTML = rating;
-    dateCell.innerHTML = date;
-    typeCell.innerHTML = type;
-    daCell.innerHTML = da;
-    actionCell.innerHTML = '<button onClick="deleteRows('+index+')">Delete</button>';
-    indexCell.innerHTML = '<div id="index'+index+'" >'+index+'</div>';
-
-
-}
-
-
-
-
-function refreshTable() {
-    var table = document.querySelector('#myTable');
-
-    table.innerHTML += '';
-
-    for (var i = 0; i < movieList.length; i++) {
-        prepareTableCell(movieList[i].name1, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da, movieList[i].index);
-    }
-}
-
 
 function loadData() {
     if (localStorage.getItem('MovieList') != null) {
@@ -49,29 +6,36 @@ function loadData() {
         refreshTable();
     }
 }
+window.onload = loadData;
+
+function onButtonClick() {
+    if (!ValidareNumeRating())
+        return;
+
+    if (!dataCalendaristica())
+        return;
+    
+    
+    addMovie();
+    refreshTable();
+}
 
 function ValidareNumeRating() {
-    var table = document.getElementById("myTable");
-    var name = document.getElementById("name1").value;
+    var name = document.getElementById("name").value;
     if (name == '') {
         text = "name input not valid";
-        document.getElementById("myTable").innerHTML = text;
-
+        document.getElementById("errorMessage").innerHTML = text;
         return false;
-
     }
 
     var rating = document.getElementById("rating").value;
-
     if (isNaN(rating) || rating < 1 || rating > 5) {
         text = "Rating must be between 1 and 5";
-        document.getElementById("myTable").innerHTML = text;
+        document.getElementById("errorMessage").innerHTML = text;
         return false;
     }
 
     return true;
-
-
 }
 
 function dataCalendaristica() {
@@ -85,7 +49,7 @@ function dataCalendaristica() {
 
     if (year < 1000 || year > 3000 || month == 0 || month > 12) {
         text = "year must be between 1000 and 3000 and month between 1 and 12";
-        document.getElementById("myTable").innerHTML = text;
+        document.getElementById("errorMessage").innerHTML = text;
         return false;
     }
 
@@ -98,152 +62,163 @@ function dataCalendaristica() {
 
     if (!(day > 0 && day <= monthLength[month - 1])) {
         text = "day must be between 1 and 31";
-        document.getElementById("myTable").innerHTML = text;
+        document.getElementById("errorMessage").innerHTML = text;
         return false;
     }
 
     return true;
 }
 
+function refreshTable() {
+    var sortedColumnHeader = document.querySelector("#myTable .descending, #myTable .ascending");
+    if(sortedColumnHeader) {
+        var isDescending = sortedColumnHeader.classList.contains("descending");
 
-function deleteRows(index) {
-    var row = document.getElementById("row"+index);
+        var compareFunction;
+        // trebuie sa dam valoare la compare function bazat pe id-ul header-ului pe care am dat click
+        switch(sortedColumnHeader.id) {
+            case "date":
+                compareFunction = compareDate;
+                break;
+            case "dvd":
+                compareFunction = compareStringsDVD;
+                break;
+            case "rating":
+                compareFunction = compareRating;
+                break;
+            case "genre":
+                compareFunction = compareStringsGenre;
+                break;
+            case "name":
+                compareFunction = compareStrings;
+                break;
+            default: throw "column not supported";
+        }
+
+        movieList = movieList.sort(compareFunction);
+        if(isDescending) {
+            movieList = movieList.reverse();
+        }
+    }
     
-    row.remove();
+    var tableRows = document.querySelectorAll('#myTable tr');
+    for (var i = 1; i < tableRows.length; i++) {
+        tableRows[i].remove();
+    }
 
-    var newMovieList = movieList.filter((obj) => {
-        return obj.index != index;
-
-    });
-
-    localStorage.setItem('MovieList',JSON.stringify(newMovieList));
-    console.log('newMovieList: ',newMovieList);
+    for (var i = 0; i < movieList.length; i++) {
+        buildTableRow(movieList[i].name, movieList[i].date, movieList[i].type, movieList[i].rating, movieList[i].da, i);
+    }
 }
 
+function buildTableRow(name, rating, date, type, da, index) {
+    var table = document.querySelector('#myTable');
+    var row = table.insertRow();
+
+    var nameCell = row.insertCell(0);
+    var ratingCell = row.insertCell(1);
+    var dateCell = row.insertCell(2);
+    var typeCell = row.insertCell(3);
+    var daCell = row.insertCell(4);
+    var actionCell = row.insertCell(5);
+
+    
+    nameCell.innerHTML = name;
+    ratingCell.innerHTML = rating;
+    dateCell.innerHTML = date;
+    typeCell.innerHTML = type;
+    daCell.innerHTML = da;
+    actionCell.innerHTML = '<button onClick="deleteRows('+index+')">Delete</button>';
+}
+
+function deleteRows(index) {    
+    movieList = movieList.filter((_, arrayIndex) => {
+        return arrayIndex != index;
+    });
+
+    localStorage.setItem('MovieList',JSON.stringify(movieList));
+    console.log('newMovieList: ',movieList);
+
+    refreshTable();
+}
 
 function addMovie() {
     let movie = {
-        name1: document.getElementById('name1').value,
+        name: document.getElementById('name').value,
         rating: document.getElementById('rating').value,
         date: document.getElementById('date').value,
         type: document.getElementById('type').value,
-        da: document.getElementById('da').checked,
-        index:document.getElementById('index').value
-
+        da: document.getElementById('da').checked
     }
 
     movieList.push(movie);
-    
-
-    let pre = document.querySelector('#myTable');
-    pre.textContent = '\n' + JSON.stringify(movieList, '\t', 2);
-
-    localStorage.setItem('MovieList', JSON.stringify(movieList) );
-
+    localStorage.setItem('MovieList', JSON.stringify(movieList));
     console.log(movieList);
-
-
-    var btnAdd = document.querySelector('button');
-    var table = document.querySelector('table');
-
-    var nameInput = document.querySelector('#name1');
-    var dateInput = document.querySelector('#date');
-    var typeInput = document.querySelector('#type');
-    var ratingInput = document.querySelector('#rating');
-    var releasedInput = document.querySelector('#da');
-    var indexInput = document.querySelector('#index');
-
-    var name1 = nameInput.value;
-    var date = dateInput.value;
-    var type = typeInput.value;
-    var rating = ratingInput.value;
-    var da = releasedInput.checked;
-    var index = indexInput.value;
-
-
-
-    let template = `
-
-    <tr>
-    <th>Name of Movie</th>
-    <th>Release Date</th>
-    <th>Type of Movie</th>
-    <th>Rating</th>
-    <th>Released on dvd</th>
-    <th>Delete</th>
-    <th>Index</th>
-
-    </tr>
-    <tr>
-        
-        <td>${index}</td>
-        <td>${name1}</td>
-        <td>${date}</td>
-        <td>${type}</td>
-        <td>${rating}</td>
-        <td>${da}</td>
-        <td>${index}</td>
-    </tr>
-    `;
-
-    table.innerHTML += template;
 }
 
-function sortTable(c) {
+function compareStrings(a, b) {
+    var textA = a.name.toUpperCase();
+    var textB = b.name.toUpperCase();
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+}
+
+function compareRating(a,b) {
+
+    return a.rating - b.rating;
+
+}
+
+function compareDate(a,b) {
+    var aa = a.date.split('/').reverse().join(),
+    bb = b.date.split('/').reverse().join();
+return aa < bb ? -1 : (aa > bb ? 1 : 0);
+}
+
+function compareStringsGenre(a, b) {
+    var textA = a.type.toUpperCase();
+    var textB = b.type.toUpperCase();
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+}
+
+function compareStringsDVD(a, b) {
      
-    const sortedTable = movieList.sort(function(a, b) {
-        var textA = a.name1.toUpperCase();
-        var textB = b.name1.toUpperCase();
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    
-    
-    localStorage.setItem('MovieList', JSON.stringify(sortedTable));
-    location.reload();
-    
-    
+        return (a.da === b.da)? 0 : a.da? -1 : 1;
 }
 
-function sortTableType(c) {
+let sortDirection = false;
+function sortColumn(event) {
+    var clickedColumnHeader = event.target;
 
-    
-    const sortedTable = movieList.sort(function(a, b) {
-        var textA = a.type.toUpperCase();
-        var textB = b.type.toUpperCase();
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
+    // trecem prin toate headerele din tabel (inafara de cel pe care am dat click) si scoatem clasele "ascending+descending"
+    var tableHeaders = document.querySelectorAll('#myTable th');
+    for(var i=0; i<tableHeaders.length;i++)
+    {
+        if(tableHeaders[i] !== clickedColumnHeader){
+            tableHeaders[i].classList.remove("ascending");
+            tableHeaders[i].classList.remove("descending");
+        }
+    }
 
+    //verificare daca are clasa "ascending"
+    // daca nu o are
+    //      sortam ascending
+    //      adaugam clasa "ascending" pe header
+    // daca o are
+    //      sortam descending
+    //      scoatem clasa "ascending" de pe header
+    //      adaugam clasa "descending" pe header
 
+    if(clickedColumnHeader.classList.contains("ascending") )
+    {
+        clickedColumnHeader.classList.remove("ascending");
+        clickedColumnHeader.classList.add("descending");
+    }
+    else
+    {
+        clickedColumnHeader.classList.remove("descending");
+        clickedColumnHeader.classList.add("ascending");
+    }
 
-    localStorage.setItem('MovieList', JSON.stringify(sortedTable));
-    location.reload();
-}
-
-
-function sortRating(c) {
-
-  const sortareRating =  movieList.sort(function (a, b) {
-        return a.rating - b.rating;
-      });
-
-
-      localStorage.setItem('MovieList', JSON.stringify(sortareRating));
-      location.reload();
-
-
-}
-
-
-
-function onButtonClick() {
-    if (!ValidareNumeRating())
-        return;
-
-    if (!dataCalendaristica())
-        return;
-    
-    
-    addMovie();
-    
     refreshTable();
 }
+

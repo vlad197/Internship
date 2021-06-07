@@ -1,6 +1,16 @@
-div {
+.ascending::after {
+    content: "\2191";
+}
+
+.descending::after {
+    content: "\2193";
+}
+
+
+
+
+body {
     font-size: 30px;
-    
 }
 
 p,
@@ -13,8 +23,18 @@ input {
     margin: .4rem;
    
 }
+
 th, td {
     border: 1px solid black;
     padding: 10px;
+}
+
+
+.errorMessage{
+    color:red;
+}
+
+.columnHeader {
+    cursor:pointer;
 }
 

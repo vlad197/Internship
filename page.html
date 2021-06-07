@@ -6,42 +6,45 @@
         <link rel="stylesheet" href="./styles.css"> 
     </head>
     <body>
-        <div>
+        <div class="form">
+            <div class="form-row">
+                <label for="name">Name:</label>
+                <input type = "text" name ="name" id="name" />
+            </div>
+            <div class="form-row">
+                <label for="date">Release Date:</label>
+                <input type = "text" name ="date" id ="date" />
+            </div>
+            <div class="form-row">
+                <label for="type">Genre:</label>
+                <input type = "text" name ="type" id ="type" />
+            </div>
+            <div class="form-row">
+                <label for="rating">Rating:</label>
+                <input type = "text" name ="rating" id ="rating" />
+            </div>
+            <div class="form-row">
+                <label for="da">DVD:</label>
+                <input type="checkbox" id="da" name="da" value="True" >
+            </div>
             
-            <table style="width:100%" id="myTable"  >
-               
-                <tr>
-                  <input type = "text" name ="name" id="name1" />
-                  <th id="nameTh" onclick="sortTable()" style="cursor: pointer;" >Name of Movie</th>
-                  <input type = "text" name ="date" id ="date" />
-                  <th>Release Date</th>
-                  <input type = "text" name ="type" id ="type" />
-                  <th id="typeTh" onclick="sortTableType()" style="cursor: pointer;" >Type of Movie</th>
-                  <input type = "text" name ="rating" id ="rating" />
-                  <th id ="RatingTh" onclick="sortRating()" style="cursor: pointer;" >Rating</th>
-                  <th>Released on dvd</th>
-                  <th>Delete</th>
-                  <th>Index</th>
-                
-                  <input type="checkbox" id="da" name="da" value="True" >
-                  <label for="da"></label>True</label>
+        </div>
+        <div id="errorMessage" class="errorMessage">
 
-                  <input type = "text"  name="index" id="index" />
-                  
-                  
-                 
-                  
-
-                </tr>
-              
-              </table>
         </div>
 
-      
+        <table style="width:100%" id="myTable"  >
+            <tr>
+                <th id="name" onclick="sortColumn(event)" class="columnHeader">Name</th>
+                <th id="date" onclick="sortColumn(event)" class="columnHeader">Release Date</th>
+                <th id="genre" onclick="sortColumn(event)" class="columnHeader">Genre</th>
+                <th id="rating" onclick="sortColumn(event)" class="columnHeader">Rating</th>
+                <th id="dvd" onclick="sortColumn(event)" class="columnHeader">Released On DVD</th>
+                <th></th>
+            </tr>
+        </table>
 
-        <button type="button" onclick="onButtonClick()">Button</button> 
-
-        <button type="button" onclick="deleteRows()">Delete</button> 
+        <button type="button" onclick="onButtonClick()">Submit</button> 
               
         <p id="count"></p>
     </body>
